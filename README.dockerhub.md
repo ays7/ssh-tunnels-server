@@ -1,8 +1,8 @@
-# ays77/ssh-tunnels-server
+# ays57/ssh-tunnels-server
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/ays77/ssh-tunnels-server)](https://hub.docker.com/r/ays77/ssh-tunnels-server)
-[![Image Size](https://img.shields.io/badge/size-~18MB-brightgreen)](https://hub.docker.com/r/ays77/ssh-tunnels-server)
-[![GitHub](https://img.shields.io/badge/GitHub-ays7%2Fssh--tunnels--server-blue?logo=github)](https://github.com/ays7/ssh-tunnels-server)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ays57/ssh-tunnels-server)](https://hub.docker.com/r/ays57/ssh-tunnels-server)
+[![Image Size](https://img.shields.io/badge/size-~18MB-brightgreen)](https://hub.docker.com/r/ays57/ssh-tunnels-server)
+[![GitHub](https://img.shields.io/badge/GitHub-ays57%2Fssh--tunnels--server-blue?logo=github)](https://github.com/ays57/ssh-tunnels-server)
 
 Hardened, lightweight (~18MB) Alpine Linux-based SSH tunnel server designed exclusively for secure port-forwarding bastions into clusters and private networks.
 
@@ -30,7 +30,7 @@ docker run -d \
   -p 2222:2222 \
   -e ALLOWED_IPS="AllowUsers tunnel@*" \
   -e AUTHORIZED_KEYS="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5... user@client" \
-  ays77/ssh-tunnels-server:latest
+  ays57/ssh-tunnels-server:latest
 ```
 
 ### 2. Run with Docker Compose
@@ -38,7 +38,7 @@ docker run -d \
 ```yaml
 services:
   ssh-tunnel:
-    image: ays77/ssh-tunnels-server:latest
+    image: ays57/ssh-tunnels-server:latest
     container_name: ssh-tunnel
     restart: unless-stopped
     ports:
@@ -89,4 +89,4 @@ ssh -p 2222 -D 1080 tunnel@<server-ip>
 
 ## Source & Documentation
 
-For complete documentation, security benchmarks, and advanced configuration, visit the [GitHub Repository](https://github.com/ays7/ssh-tunnels-server).
+For complete documentation, security benchmarks, and advanced configuration, visit the [GitHub Repository](https://github.com/ays57/ssh-tunnels-server).

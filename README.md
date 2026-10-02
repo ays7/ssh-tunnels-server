@@ -2,13 +2,13 @@
 		<img src="https://raw.githubusercontent.com/serversideup/docker-ssh/main/.github/header.png" width="1200" alt="Docker Images Logo">
 </p>
 <p align="center">
-	<a href="https://github.com/ays7/ssh-tunnels-server/blob/main/LICENSE" target="_blank"><img src="https://badgen.net/github/license/ays7/ssh-tunnels-server" alt="License"></a>
+	<a href="https://github.com/ays57/ssh-tunnels-server/blob/main/LICENSE" target="_blank"><img src="https://badgen.net/github/license/ays57/ssh-tunnels-server" alt="License"></a>
 	<a href="https://github.com/serversideup/docker-ssh" target="_blank"><img src="https://img.shields.io/badge/upstream-serversideup%2Fdocker--ssh-blue" alt="Upstream"></a>
 	<a href="https://github.com/sponsors/serversideup"><img src="https://badgen.net/badge/icon/Support%20Upstream?label=GitHub%20Sponsors&color=orange" alt="Support Upstream"></a>
 </p>
 
 ## Introduction
-This repository is a fork of [`serversideup/docker-ssh`](https://github.com/serversideup/docker-ssh), maintained at [`ays7/ssh-tunnels-server`](https://github.com/ays7/ssh-tunnels-server) (branch: `moe`).
+This repository is a fork of [`serversideup/docker-ssh`](https://github.com/serversideup/docker-ssh), maintained at [`ays57/ssh-tunnels-server`](https://github.com/ays57/ssh-tunnels-server) (branch: `moe`).
 
 It provides a hardened SSH tunnel container based on Alpine Linux, designed exclusively for establishing secure port-forwarding tunnels into your cluster, with interactive shell sessions and command execution strictly locked down.
 
@@ -79,7 +79,7 @@ This is a list of the docker images this repository creates:
 
 | Image | Description |
 | --------- | ----------- |
-| `ghcr.io/ays7/ssh-tunnels-server` | A hardened SSH tunnel server based on Alpine Linux (~18MB). |
+| `ghcr.io/ays57/ssh-tunnels-server` | A hardened SSH tunnel server based on Alpine Linux (~18MB). |
 
 ## Usage instructions
 All variables are documented here:
@@ -128,7 +128,7 @@ ALLOWED_IPS="AllowUsers *@192.168.1.0/24 *@172.16.0.1 *@10.0.*.1"
 ### 3. Forward your external port to `2222` on the container
 You can see I'm forwarding `12345` to `2222`.
 ```sh
-docker run --rm --name=ssh --network=web -p 12345:2222 ghcr.io/ays7/ssh-tunnels-server:latest
+docker run --rm --name=ssh --network=web -p 12345:2222 ghcr.io/ays57/ssh-tunnels-server:latest
 ```
 Because interactive shells and arbitrary command executions are locked down, you can establish tunnels using either of the following methods:
 
@@ -158,7 +158,7 @@ services:
       MARIADB_ROOT_PASSWORD: "myrootpassword"
 
   ssh:
-    image: ghcr.io/ays7/ssh-tunnels-server:latest
+    image: ghcr.io/ays57/ssh-tunnels-server:latest
     ports:
       - target: 2222
         published: 2222
@@ -192,7 +192,7 @@ services:
       MARIADB_ROOT_PASSWORD: "myrootpassword"
 
   ssh:
-    image: ghcr.io/ays7/ssh-tunnels-server:latest
+    image: ghcr.io/ays57/ssh-tunnels-server:latest
     ports:
       - target: 2222
         published: 2222
@@ -273,7 +273,7 @@ Host myserver.test
 ```
 
 ## Resources
-- **[GitHub Repository](https://github.com/ays7/ssh-tunnels-server)** for source code, issues, and discussions on this fork.
+- **[GitHub Repository](https://github.com/ays57/ssh-tunnels-server)** for source code, issues, and discussions on this fork.
 - **[Upstream Repository](https://github.com/serversideup/docker-ssh)** for the original project by Server Side Up.
 - **[Upstream Discord](https://serversideup.net/discord)** for friendly support from the original creators and community.
 - **[Get Professional Help](https://serversideup.net/professional-support)** - Get video + screen-sharing help directly from the upstream core contributors.
@@ -281,10 +281,10 @@ Host myserver.test
 ## Contributing
 As an open-source project, we strive for transparency and collaboration in our development process. We greatly appreciate any contributions members of our community can provide. Whether you're fixing bugs, proposing features, improving documentation, or spreading awareness - your involvement strengthens the project. Please review our [code of conduct](./.github/code_of_conduct.md) to understand how we work together respectfully.
 
-- **Bug Report**: If you're experiencing an issue while using this image, please [create an issue on GitHub](https://github.com/ays7/ssh-tunnels-server/issues/new/choose).
-- **Feature Request**: Make this project better by [submitting a feature request](https://github.com/ays7/ssh-tunnels-server/discussions/).
+- **Bug Report**: If you're experiencing an issue while using this image, please [create an issue on GitHub](https://github.com/ays57/ssh-tunnels-server/issues/new/choose).
+- **Feature Request**: Make this project better by [submitting a feature request](https://github.com/ays57/ssh-tunnels-server/discussions/).
 - **Documentation**: Improve our documentation by [submitting a documentation change](./README.md).
-- **Community Support**: Help others on [GitHub Discussions](https://github.com/ays7/ssh-tunnels-server/discussions) or the upstream [Discord](https://serversideup.net/discord).
+- **Community Support**: Help others on [GitHub Discussions](https://github.com/ays57/ssh-tunnels-server/discussions) or the upstream [Discord](https://serversideup.net/discord).
 - **Security Report**: Report critical security issues via [our responsible disclosure policy](https://www.notion.so/Responsible-Disclosure-Policy-421a6a3be1714d388ebbadba7eebbdc8).
 
 Need help getting started? Join our Discord community and we'll help you out!
