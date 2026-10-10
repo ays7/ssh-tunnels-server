@@ -45,54 +45,64 @@ validate_allowed_ips() {
 ######################################################
 # Main
 ######################################################
-# Rename the Ansible user if it doesn't match the default
+# Rename the user if it doesn't match the default
 if [ "$ssh_user" != "$default_unprivileged_user" ]; then
+    if id "$ssh_user" >/dev/null 2>&1; then
+        debug_print "User \"$ssh_user\" already exists. Skipping user rename."
+    elif id "$default_unprivileged_user" >/dev/null 2>&1; then
+        debug_print "Renaming user \"$default_unprivileged_user\" to \"$ssh_user\"..."
 
-    debug_print "Renaming user \"$default_unprivileged_user\" to \"$ssh_user\"..."
-
-    # Check if we're on Alpine or Debian
-    if [ -f /etc/alpine-release ] || [ -f /etc/debian_version ]; then
-        # Rename user and group
-        usermod -l "$ssh_user" "$default_unprivileged_user" || { echo "Failed to rename user"; exit 1; }
-        groupmod -n "$ssh_user" "$default_unprivileged_user" || { echo "Failed to rename group"; exit 1; }
-        
-        # Update home directory and move contents to new home directory
-        usermod -d "/home/$ssh_user" -m "$ssh_user" || { echo "Failed to update home directory"; exit 1; }
-        
-        if [ -f /etc/debian_version ]; then
-            # Update default group for Debian-based systems
-            usermod -g "$ssh_user" "$ssh_user" || { echo "Failed to update default group"; exit 1; }
+        # Check if we're on Alpine or Debian
+        if [ -f /etc/alpine-release ] || [ -f /etc/debian_version ]; then
+            # Rename user and group
+            usermod -l "$ssh_user" "$default_unprivileged_user" || { echo "Failed to rename user"; exit 1; }
+            if getent group "$default_unprivileged_user" >/dev/null 2>&1; then
+                groupmod -n "$ssh_user" "$default_unprivileged_user" || { echo "Failed to rename group"; exit 1; }
+            fi
+            
+            # Update home directory and move contents to new home directory
+            usermod -d "/home/$ssh_user" -m "$ssh_user" || { echo "Failed to update home directory"; exit 1; }
+            
+            if [ -f /etc/debian_version ]; then
+                # Update default group for Debian-based systems
+                usermod -g "$ssh_user" "$ssh_user" || { echo "Failed to update default group"; exit 1; }
+            fi
+            
+            debug_print "User and group renamed successfully. Home directory updated."
+        else
+            echo "Unsupported distribution for renaming user."
+            exit 1
         fi
-        
-        debug_print "User and group renamed successfully. Home directory updated."
     else
-        echo "Unsupported distribution for renaming user."
+        echo "Failed to configure user: neither \"$ssh_user\" nor \"$default_unprivileged_user\" exists."
         exit 1
     fi
 fi
 
-# Change the SSH user and group to the specified UID and GID if they are not the default
-if { [ ! -z "${PUID}" ] && [ "${PUID}" != "$default_uid" ]; } || { [ ! -z "${PGID}" ] && [ "${PGID}" != "$default_gid" ]; }; then
-    debug_print "Preparing environment for $PUID:$PGID..."
-    
-    # Handle existing user with the same UID
+# Change the SSH user UID if it differs from current
+if [ -n "${PUID}" ] && [ "$(id -u "${ssh_user}" 2>/dev/null)" != "${PUID}" ]; then
+    debug_print "Updating UID for ${ssh_user} to ${PUID}..."
     if id -u "${PUID}" >/dev/null 2>&1; then
         old_user=$(id -nu "${PUID}")
-        debug_print "UID ${PUID} already exists for user ${old_user}. Moving to a new UID."
-        usermod -u "999${PUID}" "${old_user}"
+        if [ "${old_user}" != "${ssh_user}" ]; then
+            debug_print "UID ${PUID} already exists for user ${old_user}. Moving to a new UID."
+            usermod -u "999${PUID}" "${old_user}"
+        fi
     fi
+    usermod -u "${PUID}" "${ssh_user}" 2>&1 >/dev/null || echo "Error changing user ID."
+fi
 
-    # Handle existing group with the same GID
+# Change the SSH user GID if it differs from current
+if [ -n "${PGID}" ] && [ "$(id -g "${ssh_user}" 2>/dev/null)" != "${PGID}" ]; then
+    debug_print "Updating GID for ${ssh_user} to ${PGID}..."
     if getent group "${PGID}" >/dev/null 2>&1; then
         old_group=$(getent group "${PGID}" | cut -d: -f1)
-        debug_print "GID ${PGID} already exists for group ${old_group}. Moving to a new GID."
-        groupmod -g "999${PGID}" "${old_group}"
+        if [ "${old_group}" != "${ssh_user}" ]; then
+            debug_print "GID ${PGID} already exists for group ${old_group}. Moving to a new GID."
+            groupmod -g "999${PGID}" "${old_group}"
+        fi
     fi
-
-    # Change UID and GID of ssh_user user and group
-    usermod -u "${PUID}" "${ssh_user}" 2>&1 >/dev/null || echo "Error changing user ID."
     groupmod -g "${PGID}" "${ssh_user}" 2>&1 >/dev/null || echo "Error changing group ID."
-
 fi
 
 # Set SSHD configuration
@@ -205,16 +215,19 @@ fi
 # Setup authorized keys
 mkdir -p "${ssh_user_home}/.ssh/"
 
-if [ -n "$AUTHORIZED_KEYS" ] && [ ! -f "${ssh_user_home}/.ssh/authorized_keys" ]; then
-    echo "🔑 Setting authorized keys (from AUTHORIZED_KEYS variable)..."
+if [ -n "$AUTHORIZED_KEYS" ]; then
+    if [ -f /authorized_keys ]; then
+        echo "⚠️ WARNING: Both AUTHORIZED_KEYS and authorized_keys file are set."
+        echo "ℹ️ INFO: We'll be using the AUTHORIZED_KEYS variable to configure SSH."
+    else
+        echo "🔑 Setting authorized keys (from AUTHORIZED_KEYS variable)..."
+    fi
     echo "${AUTHORIZED_KEYS}" > "${ssh_user_home}/.ssh/authorized_keys"
-elif [ -z "$AUTHORIZED_KEYS" ] && [ -f /authorized_keys ]; then
+elif [ -f /authorized_keys ]; then
     echo "🔐 Using the provided authorized_keys file..."
     cp /authorized_keys "${ssh_user_home}/.ssh/authorized_keys"
-elif [ -n "$AUTHORIZED_KEYS" ] && [ -f /authorized_keys ]; then
-    echo "⚠️ WARNING: Both AUTHORIZED_KEYS and authorized_keys file are set."
-    echo "ℹ️ INFO: We'll be using the AUTHORIZED_KEYS variable to configure SSH."
-    echo "${AUTHORIZED_KEYS}" > "${ssh_user_home}/.ssh/authorized_keys"
+elif [ -f "${ssh_user_home}/.ssh/authorized_keys" ]; then
+    echo "🔐 Using existing authorized_keys file..."
 else
     echo "🚨🚨🚨 CONFIGURATION ERROR:"
     echo "You must either set the AUTHORIZED_KEYS"
@@ -225,13 +238,9 @@ fi
 
 # Set proper permissions
 debug_print "Changing ownership of all files and directories..."
-chown "${PUID}:${PGID}" \
-    "${ssh_user_home}" \
-    "${ssh_user_home}/.ssh" \
-    "${ssh_user_home}/.ssh/authorized_keys"
-chmod 700 \
-    "${ssh_user_home}/.ssh" \
-    "${ssh_user_home}/.ssh/authorized_keys"
+chown -R "${ssh_user}:${ssh_user}" "${ssh_user_home}"
+chmod 700 "${ssh_user_home}/.ssh"
+chmod 600 "${ssh_user_home}/.ssh/authorized_keys"
 # Ensure strict permissions on SSH configuration
 chmod 600 /etc/ssh/sshd_config.d/*.conf
 chmod 755 /etc/ssh/sshd_config.d
