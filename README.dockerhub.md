@@ -2,7 +2,7 @@
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/ays57/ssh-tunnels-server)](https://hub.docker.com/r/ays57/ssh-tunnels-server)
 [![Image Size](https://img.shields.io/badge/size-~18MB-brightgreen)](https://hub.docker.com/r/ays57/ssh-tunnels-server)
-[![GitHub](https://img.shields.io/badge/GitHub-ays57%2Fssh--tunnels--server-blue?logo=github)](https://github.com/ays57/ssh-tunnels-server)
+[![GitHub](https://img.shields.io/badge/GitHub-ays7%2Fssh--tunnels--server-blue?logo=github)](https://github.com/ays7/ssh-tunnels-server)
 
 Hardened, lightweight (~18MB) Alpine Linux-based SSH tunnel server designed exclusively for secure port-forwarding bastions into clusters and private networks.
 
@@ -89,4 +89,4 @@ ssh -p 2222 -D 1080 tunnel@<server-ip>
 
 ## Source & Documentation
 
-For complete documentation, security benchmarks, and advanced configuration, visit the [GitHub Repository](https://github.com/ays57/ssh-tunnels-server).
+For complete documentation, security benchmarks, and advanced configuration, visit the [GitHub Repository](https://github.com/ays7/ssh-tunnels-server).

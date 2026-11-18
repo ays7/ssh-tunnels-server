@@ -41,13 +41,13 @@ RUN apk add --no-cache ${PACKAGE_DEPENDENCIES} && \
 # Expose the SSH port
 EXPOSE 2222
 
-LABEL org.opencontainers.image.title="ays57/ssh-tunnels-server" \
+LABEL org.opencontainers.image.title="ays7/ssh-tunnels-server" \
     org.opencontainers.image.description="Hardened SSH tunnel container. Exclusively for port forwarding and secure connections into clusters." \
-    org.opencontainers.image.url="https://github.com/ays57/ssh-tunnels-server" \
-    org.opencontainers.image.source="https://github.com/ays57/ssh-tunnels-server" \
-    org.opencontainers.image.documentation="https://github.com/ays57/ssh-tunnels-server" \
-    org.opencontainers.image.vendor="ays57" \
-    org.opencontainers.image.authors="Alexey (@ays57), Jay Rogers (@jaydrogers)" \
+    org.opencontainers.image.url="https://github.com/ays7/ssh-tunnels-server" \
+    org.opencontainers.image.source="https://github.com/ays7/ssh-tunnels-server" \
+    org.opencontainers.image.documentation="https://github.com/ays7/ssh-tunnels-server" \
+    org.opencontainers.image.vendor="ays7" \
+    org.opencontainers.image.authors="Alexey (@ays7), Jay Rogers (@jaydrogers)" \
     org.opencontainers.image.version="${REPOSITORY_BUILD_VERSION}" \
     org.opencontainers.image.licenses="GPL-3.0-or-later"
 
