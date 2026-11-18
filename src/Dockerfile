@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=skip=SecretsUsedInArgOrEnv
-FROM alpine:latest
+FROM alpine:3.23
 
 ENV ALLOWED_IPS="AllowUsers tunnel" \
     DEBUG_MODE="false" \
